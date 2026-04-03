@@ -11,12 +11,24 @@ SSH_KEY="$HOME/.ssh/dx_sync_key"
 echo "=== DX Sync Platform — One-time Install ==="
 echo "Project directory: $PROJECT_DIR"
 
-# Validate .env exists
+# Create .env interactively if it doesn't exist
 if [ ! -f "$PROJECT_DIR/.env" ]; then
     echo ""
-    echo "ERROR: .env file not found."
-    echo "Copy .env.example to .env and fill in your DOTS_REPO_URL first."
-    exit 1
+    echo ".env not found — let's set it up now."
+    echo ""
+    read -p "  DOTS_REPO_URL (e.g. git@github.com:YOUR_USERNAME/dots-repo.git): " dots_url
+    default_key="$HOME/.ssh/dx_sync_key"
+    read -p "  SSH_KEY_PATH [$default_key]: " ssh_path
+    ssh_path="${ssh_path:-$default_key}"
+
+    cat > "$PROJECT_DIR/.env" <<EOF
+SSH_KEY_PATH=$ssh_path
+DOTS_REPO_URL=$dots_url
+DOTS_DIR=/root/dots
+SYNC_INTERVAL=15
+SYNC_MODE=all
+EOF
+    echo ".env created at $PROJECT_DIR/.env"
 fi
 
 # Generate SSH key if it doesn't exist
