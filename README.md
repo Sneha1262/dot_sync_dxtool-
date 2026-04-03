@@ -47,11 +47,13 @@ Replace `YOUR_USERNAME` with your GitHub username.
 
 ### Step 2 -- Set up your environment file
 
+The install script in Step 3 will create `.env` for you interactively — it prompts for your `DOTS_REPO_URL` and `SSH_KEY_PATH`. You can skip this step and let the script handle it.
+
+If you prefer to set it up manually, copy the template and fill in your values:
+
 ```bash
 cp .env.example .env
 ```
-
-Open `.env` and fill in your values.
 
 **Windows:**
 ```
@@ -119,7 +121,7 @@ dev_container_2   Up 1 minute (healthy)
 In a new terminal, write a file into dev1:
 
 ```bash
-docker exec dev_container_1 bash -c "echo 'alias ll=\"ls -la\"' >> /root/dots/.aliases"
+docker exec dev_container_1 bash -c "echo 'alias ll=ls -la' > /root/dots/.aliases"
 ```
 
 Watch dev1's logs to confirm it pushed:
@@ -228,7 +230,7 @@ docker-compose up -d dev1 dev2
 Write a file into dev1:
 
 ```bash
-docker exec dev_container_1 bash -c "echo 'alias ll=\"ls -la\"' >> /root/dots/.aliases"
+docker exec dev_container_1 bash -c "echo 'alias ll=ls -la' > /root/dots/.aliases"
 ```
 
 Watch dev1 push it:
