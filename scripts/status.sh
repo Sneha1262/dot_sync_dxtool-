@@ -1,5 +1,6 @@
 #!/bin/bash
 # Check sync status across all running DX Sync containers.
+# Reads /tmp/dx_sync_status written by the agent — warns if stale >60s or failed.
 # Usage: bash scripts/status.sh
 
 CONTAINERS=("dev_container_1" "dev_container_2" "dev_container_3")
