@@ -2,6 +2,8 @@
 
 Auto-sync for your personal dots repo across dev containers. No manual steps, no copying files around.
 
+> SSH-authenticated | Feedback-loop safe | Container health monitoring included
+
 ---
 
 ## Table of Contents
