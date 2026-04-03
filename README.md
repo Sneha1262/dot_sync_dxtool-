@@ -89,11 +89,12 @@ bash scripts/install.sh
 
 What the install script does:
 
-1. Generates an SSH key pair at `~/.ssh/dx_sync_key` if one doesn't already exist
-2. Shows you the public key and waits while you add it to GitHub (Settings > SSH keys)
-3. Builds the Docker image
-4. Starts the containers in detached mode
-5. Registers them to start automatically on every boot/login using systemd on Linux, launchd on macOS, and Task Scheduler on Windows
+1. Creates `.env` interactively if it doesn't exist — prompts for `DOTS_REPO_URL` and `SSH_KEY_PATH` so you don't need to edit files manually
+2. Generates an SSH key pair at `~/.ssh/dx_sync_key` if one doesn't already exist
+3. Shows you the public key and waits while you add it to GitHub (Settings > SSH keys)
+4. Builds the Docker image
+5. Starts the containers in detached mode
+6. Registers them to start automatically on every boot/login using systemd on Linux, launchd on macOS, and Task Scheduler on Windows
 
 After this you never touch the tool again. It just runs.
 
@@ -383,7 +384,7 @@ The agent recovers automatically once connectivity is back. No restart needed.
 
 The solution uses last-write-wins via GitHub. If two containers push a change to the same file at the same time, the second push detects diverged history, tries a rebase, and if there's a real line-level conflict it resets to remote state. That means the second container's change gets discarded and it converges to whatever GitHub has.
 
-In practice this is rare for personal dotfiles since it's one developer across multiple containers, rarely editing the same line at the same moment. But if a change disappears, check `docker logs dev_container_X` for a rebase conflict warning and re-apply the change.
+In practice this is rare for personal dotfiles since it's one developer across multiple containers, rarely editing the same line at the same moment. But if a change disappears, run the status script — the affected container will show `push:conflict` in its status output. Check `docker logs dev_container_X` for details and re-apply the change manually.
 
 ---
 
@@ -516,7 +517,7 @@ dx-sync-platform/
 
 ### How each component works
 
-**main.py** runs in sequence on startup: configure git identity, clone repo, pull latest, start pull loop thread, hand off to watcher. The pull loop runs as a daemon thread so it doesn't block the watcher. If `DOTS_REPO_URL` is missing it fails immediately with a clear error.
+**main.py** runs in sequence on startup: configure git identity, clone repo, pull latest, start pull loop thread, hand off to watcher. The pull loop runs as a daemon thread so it doesn't block the watcher. If `DOTS_REPO_URL` is missing or is not an SSH URL (i.e. doesn't start with `git@`), it fails immediately with a clear error rather than hanging on an auth failure later.
 
 **git_handler.py** handles all git operations. SSH auth is configured via `git config core.sshCommand` pointing to the mounted private key at `/root/.ssh/dx_sync_key`. On startup `ssh-keyscan github.com` adds GitHub to `known_hosts` to avoid interactive prompts. No token, no expiry, nothing stored in `.git/config`. Pull uses `fetch + reset --hard origin/HEAD` rather than `git pull` because it's idempotent. It always converges to remote state regardless of what happened locally. An `is_pulling` threading flag gets set during every pull so the watcher knows to ignore events.
 
