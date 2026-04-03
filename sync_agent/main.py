@@ -20,7 +20,7 @@ except ValueError:
 # ── Background pull loop ──────────────────────────────────────
 
 
-def periodic_pull(dots_dir, interval):
+def periodic_pull(dots_dir: str, interval: int) -> None:
     """Pull from remote on a fixed interval to catch changes from other containers."""
     while True:
         time.sleep(interval)
@@ -40,6 +40,10 @@ if __name__ == "__main__":
     DOTS_REPO_URL = os.environ.get("DOTS_REPO_URL")
     if not DOTS_REPO_URL:
         raise ValueError("DOTS_REPO_URL environment variable is required")
+    if not DOTS_REPO_URL.startswith("git@"):
+        raise ValueError(
+            f"DOTS_REPO_URL must be an SSH URL (git@github.com:...), got: {DOTS_REPO_URL!r}"
+        )
 
     logging.info("=== DX Sync Agent starting ===")
     logging.info(f"Repo: {DOTS_REPO_URL}")
