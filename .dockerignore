@@ -1,0 +1,19 @@
+# Git history — not needed in the image
+.git
+
+# Local environment — never copy secrets into the image
+.env
+
+# Documentation and scripts — not needed at runtime
+README.md
+scripts/
+
+# Editor and OS noise
+.vscode/
+.idea/
+*.swp
+*~
+
+# Python cache
+__pycache__/
+*.py[cod]

@@ -1,0 +1,16 @@
+# Credentials — never commit your real token
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
