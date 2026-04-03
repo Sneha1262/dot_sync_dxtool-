@@ -499,9 +499,17 @@ dx-sync-platform/
 |   +-- uninstall.ps1     # Removes auto-start and stops containers (Windows)
 |   +-- status.sh         # Check sync status across all containers (Linux/macOS)
 |   +-- status.ps1        # Check sync status across all containers (Windows)
++-- tests/
+|   +-- test_watcher.py       # Unit tests: file filtering, is_pulling guard, debounce
+|   +-- test_git_handler.py   # Unit tests: status file writes, run_command behaviour
+|   +-- integration_test.sh   # End-to-end: verifies sync across containers within 30s SLA
++-- .github/
+|   +-- workflows/ci.yml      # CI: flake8 lint + pytest + Docker build on every push
 +-- Dockerfile            # Single image used by all containers
 +-- docker-compose.yml    # Defines dev1, dev2, dev3 with health checks
 +-- requirements.txt      # watchdog==4.0.0
++-- requirements-dev.txt  # pytest + flake8 for local development and CI
++-- setup.cfg             # flake8 config (max line length 100)
 +-- .env.example          # Safe template, no real credentials
 +-- .gitignore            # Ensures .env is never committed
 ```
@@ -517,6 +525,26 @@ dx-sync-platform/
 **docker-compose.yml** defines three services sharing the same image and `.env`. `restart: unless-stopped` recovers from crashes. The healthcheck uses `python -c "import os, sys; sys.exit(0 if os.path.isdir('/root/dots/.git') else 1)"` which is a Python one-liner rather than `pgrep` because `python:3.11-slim` doesn't include process inspection tools.
 
 **scripts/install.sh and install.ps1** do three things: build the image, start the containers in detached mode, and register them with the OS auto-start mechanism. On Linux that's a systemd service (`After=docker.service`), on macOS a launchd plist, on Windows a Task Scheduler task at login. Run it once, never think about it again.
+
+### Testing
+
+Unit tests cover the core logic that is hardest to verify by eye:
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v
+```
+
+- `test_watcher.py` — verifies file filtering (ignores `.git`, `.lock`, `.swp`, `~`), confirms that `is_pulling` blocks pushes during a pull, and confirms the 5-second debounce suppresses rapid events
+- `test_git_handler.py` — verifies the status file writes correct content, includes the UTC timestamp, handles permission errors without crashing, and that `run_command` raises with a clear message on failure
+
+For end-to-end verification against real containers:
+
+```bash
+bash tests/integration_test.sh
+```
+
+This spins up dev1 and dev2, writes a file into dev1, and verifies it appears in dev2 within the 30-second SLA. It then starts dev3 and confirms it bootstraps with the latest state. CI runs the unit tests and Docker build on every push via GitHub Actions.
 
 ### Issues I ran into and how I fixed them
 
