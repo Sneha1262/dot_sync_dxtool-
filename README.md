@@ -147,10 +147,15 @@ docker exec dev_container_2 bash -c "cat /root/dots/.aliases"
 
 ```bash
 docker-compose up -d dev3
+```
+
+Wait ~40 seconds for dev3 to clone the repo and become healthy, then:
+
+```bash
 docker exec dev_container_3 bash -c "cat /root/dots/.aliases"
 ```
 
-dev3 cloned the repo on startup so the file is already there. No manual copy needed.
+dev3 cloned the repo on startup so the file is already there. No manual copy needed. Note: the 30-second sync SLA applies to changes between *running* containers — a fresh container takes longer on first start because it clones the full repo from GitHub.
 
 ---
 
@@ -257,7 +262,7 @@ Spin up a fresh container:
 docker-compose up -d dev3
 ```
 
-Check it already has the file that was pushed from dev1:
+Wait ~40 seconds for dev3 to become healthy (it clones the repo on first start), then check it already has the file:
 
 ```bash
 docker exec dev_container_3 bash -c "cat /root/dots/.aliases"
