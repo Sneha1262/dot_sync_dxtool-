@@ -15,7 +15,7 @@ class ChangeHandler(FileSystemEventHandler):
         self.repo_dir = repo_dir
         self.last_push_time = 0
 
-    def _should_sync(self, path):
+    def _should_sync(self, path: str) -> bool:
         normalized = os.path.normpath(path).replace("\\", "/")
         filename = os.path.basename(normalized)
 
@@ -33,7 +33,7 @@ class ChangeHandler(FileSystemEventHandler):
 
         return True
 
-    def _trigger_push(self, event_type, path):
+    def _trigger_push(self, event_type: str, path: str) -> None:
         if not self._should_sync(path):
             return
 
@@ -57,18 +57,18 @@ class ChangeHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         if not event.is_directory:
-            self._trigger_push("CREATED", event.src_path)
+            self._trigger_push("CREATED", str(event.src_path))
 
     def on_modified(self, event):
         if not event.is_directory:
-            self._trigger_push("MODIFIED", event.src_path)
+            self._trigger_push("MODIFIED", str(event.src_path))
 
     def on_deleted(self, event):
         if not event.is_directory:
-            self._trigger_push("DELETED", event.src_path)
+            self._trigger_push("DELETED", str(event.src_path))
 
 
-def start_watcher(repo_dir):
+def start_watcher(repo_dir: str) -> None:
     handler = ChangeHandler(repo_dir)
     observer = Observer()
     observer.schedule(handler, path=repo_dir, recursive=True)

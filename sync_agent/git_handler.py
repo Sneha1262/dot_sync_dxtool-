@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 STATUS_FILE = "/tmp/dx_sync_status"
 
 
-def _write_status(event, detail=""):
+def _write_status(event: str, detail: str = "") -> None:
     """Write last sync event to a status file for quick health checks."""
     try:
         with open(STATUS_FILE, "w") as f:
@@ -30,7 +30,7 @@ SSH_KEY_PATH  = "/root/.ssh/dx_sync_key_rw"  # writable copy: SSH rejects keys w
 is_pulling = threading.Event()
 
 
-def run_command(command, cwd=None):
+def run_command(command: str, cwd: str | None = None) -> str:
     result = subprocess.run(
         command,
         cwd=cwd,
@@ -39,11 +39,11 @@ def run_command(command, cwd=None):
         text=True
     )
     if result.returncode != 0:
-        raise Exception(result.stderr.strip())
+        raise Exception(f"Command failed: {command!r}\n{result.stderr.strip()}")
     return result.stdout.strip()
 
 
-def setup_git_config():
+def setup_git_config() -> None:
     """Configure git identity and SSH authentication.
 
     The SSH private key is mounted into the container at /root/.ssh/dx_sync_key.
@@ -72,7 +72,7 @@ def setup_git_config():
     logging.info("[GIT] SSH auth configured — no token, no expiry")
 
 
-def clone_repo(repo_url, target_dir):
+def clone_repo(repo_url: str, target_dir: str) -> None:
     if not os.path.exists(target_dir):
         logging.info(f"[GIT] Cloning repo to {target_dir}")
         run_command(f"git clone {repo_url} {target_dir}")
@@ -80,7 +80,7 @@ def clone_repo(repo_url, target_dir):
         logging.info("[GIT] Repo already exists, skipping clone")
 
 
-def pull_changes(repo_dir):
+def pull_changes(repo_dir: str) -> None:
     """Force-sync local state to match remote HEAD.
     Sets is_pulling while running so the watcher skips spurious events.
     """
@@ -103,7 +103,7 @@ def pull_changes(repo_dir):
         is_pulling.clear()
 
 
-def push_changes(repo_dir):
+def push_changes(repo_dir: str) -> None:
     """Commit any local changes and push to remote."""
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -135,7 +135,7 @@ def push_changes(repo_dir):
     _write_status("push:failed", "check network / GitHub access")
 
 
-def _stage_files(repo_dir):
+def _stage_files(repo_dir: str) -> None:
     if SYNC_MODE == "dotfiles_only":
         logging.info("[GIT] Staging dotfiles only")
         for root, _, files in os.walk(repo_dir):
