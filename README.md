@@ -37,11 +37,9 @@ This is a one-time setup. Once you run the install script, the sync agent starts
 ### Step 1 -- Clone this repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/dx-sync-platform.git
-cd dx-sync-platform
+git clone https://github.com/Sneha1262/dot_sync_dxtool-.git
+cd dot_sync_dxtool-
 ```
-
-Replace `YOUR_USERNAME` with your GitHub username.
 
 ---
 
