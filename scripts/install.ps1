@@ -12,12 +12,24 @@ $EnvFile    = Join-Path $ProjectDir ".env"
 Write-Host "=== DX Sync Platform - One-time Install ===" -ForegroundColor Cyan
 Write-Host "Project directory: $ProjectDir"
 
-# Validate .env exists
+# Create .env interactively if it doesn't exist
 if (-not (Test-Path $EnvFile)) {
     Write-Host ""
-    Write-Host "ERROR: .env file not found." -ForegroundColor Red
-    Write-Host "Copy .env.example to .env and fill in your DOTS_REPO_URL first."
-    exit 1
+    Write-Host ".env not found - let's set it up now." -ForegroundColor Yellow
+    Write-Host ""
+    $DotsUrl = Read-Host "  DOTS_REPO_URL (e.g. git@github.com:YOUR_USERNAME/dots-repo.git)"
+    $DefaultKey = "$env:USERPROFILE\.ssh\dx_sync_key"
+    $SshInput = Read-Host "  SSH_KEY_PATH [$DefaultKey] (press Enter for default)"
+    if ([string]::IsNullOrWhiteSpace($SshInput)) { $SshInput = $DefaultKey }
+
+    @"
+SSH_KEY_PATH=$($SshInput -replace '\\', '/')
+DOTS_REPO_URL=$DotsUrl
+DOTS_DIR=/root/dots
+SYNC_INTERVAL=15
+SYNC_MODE=all
+"@ | Set-Content $EnvFile
+    Write-Host ".env created at $EnvFile" -ForegroundColor Green
 }
 
 # Generate SSH key if it doesn't already exist
