@@ -9,6 +9,7 @@ services:
     volumes:
       - ${SSH_KEY_PATH}:/root/.ssh/dx_sync_key:ro
     restart: unless-stopped
+    # Healthcheck uses Python instead of pgrep/ps — slim images don't include procps
     healthcheck:
       test: ["CMD", "python", "-c", "import os, sys; sys.exit(0 if os.path.isdir('/root/dots/.git') else 1)"]
       interval: 30s
