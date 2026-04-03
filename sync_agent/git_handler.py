@@ -119,7 +119,7 @@ def push_changes(repo_dir: str) -> None:
             try:
                 run_command("git pull --rebase", cwd=repo_dir)
             except Exception:
-                logging.warning("[GIT] Rebase conflict — resetting to remote HEAD (local change discarded)")
+                logging.warning("[GIT] Rebase conflict — resetting to remote HEAD")
                 run_command("git fetch origin", cwd=repo_dir)
                 run_command("git reset --hard origin/HEAD", cwd=repo_dir)
                 _write_status("push:conflict", "local change discarded — remote HEAD wins")
