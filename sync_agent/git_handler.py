@@ -23,8 +23,8 @@ def _write_status(event, detail=""):
 HOSTNAME = socket.gethostname()
 MAX_RETRIES = 3
 SYNC_MODE = os.environ.get("SYNC_MODE", "all")
-SSH_KEY_MOUNT = "/root/.ssh/dx_sync_key"   # read-only volume mount
-SSH_KEY_PATH  = "/root/.ssh/dx_sync_key_rw"  # writable copy used by SSH
+SSH_KEY_MOUNT = "/root/.ssh/dx_sync_key"   # read-only Docker volume mount (:ro)
+SSH_KEY_PATH  = "/root/.ssh/dx_sync_key_rw"  # writable copy: SSH rejects keys without chmod 600
 
 # Shared flag: set while a pull is in progress so the watcher can pause
 is_pulling = threading.Event()
