@@ -200,6 +200,10 @@ Without sync, the question "which container has my latest `.bashrc`?" becomes a 
 
 The developer edits a file. That's it. The agent detects it, commits it, pushes it, and every other container pulls it on the next tick. No command to run, no flag to set, no sync to check.
 
+### Internal Developer Platform fit
+
+In a team using an Internal Developer Platform like Backstage, this agent would be registered as a catalog component — making it discoverable and self-service for every developer on the team without needing to ask anyone how to set it up.
+
 ---
 
 ## 3. Demo Walkthrough
