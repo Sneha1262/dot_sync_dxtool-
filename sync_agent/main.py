@@ -19,6 +19,7 @@ except ValueError:
 
 # ── Background pull loop ──────────────────────────────────────
 
+
 def periodic_pull(dots_dir, interval):
     """Pull from remote on a fixed interval to catch changes from other containers."""
     while True:
