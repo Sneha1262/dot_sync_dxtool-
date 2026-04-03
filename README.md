@@ -183,23 +183,21 @@ This stops the containers and removes the auto-start registration.
 
 ## 2. DX Impact
 
-The real test of a developer experience tool is whether the developer ever has to think about it. If they do, it's just another step in their workflow. If they don't, it's doing its job.
+A good DX tool disappears. You don't notice it's there — you just notice when it's missing.
 
-### No more environment setup tax
+### Container setup used to mean manual work
 
-Every time a developer spins up a new container they normally have to reinstall aliases, restore config files, redo editor preferences. That can take 10 minutes on a good day or 30+ minutes if they have to remember what they had before. With this solution the container clones the dots repo on startup. Before the developer even opens a terminal, their environment is ready.
+Before this, spinning up a new container meant re-adding aliases, re-copying config files, and trying to remember what you had set up in the previous one. That's not a big task once, but it's an annoying one every time — and in a team where developers spin up containers regularly, it's constant low-level friction.
 
-### No more "which container has my latest config?"
+With this solution the container clones the dots repo on startup. The developer's environment is already there when they open a terminal.
 
-Without sync, a developer edits `.bashrc` in one container, switches to another, and the change isn't there. Then they start wondering: did I save it? which container was I in? did I forget to copy it? This solution makes GitHub the single source of truth. Every container converges to it automatically within 15 to 23 seconds of any change. That question just goes away.
+### One source of truth, no manual copying
 
-### Zero overhead after setup
+Without sync, the question "which container has my latest `.bashrc`?" becomes a real question. You edit something in dev1, switch to dev3, and it's not there. Did I save it? Did I push it? This solution removes that entirely — GitHub is the source of truth, every container converges to it within 15–23 seconds.
 
-The developer edits a file. The watcher detects it, pushes it to GitHub, and every other container pulls it on the next tick. The developer did nothing except make their edit. No commands to remember, no sync to trigger, no state to manage.
+### Nothing to trigger, nothing to remember
 
-### What this actually frees up
-
-Developers stay in the problem they're trying to solve instead of fiddling with environment setup. They're not thinking about containers, not copying files, not debugging why an alias works in one place and not another. That recovered focus adds up across a team and across weeks.
+The developer edits a file. That's it. The agent detects it, commits it, pushes it, and every other container pulls it on the next tick. No command to run, no flag to set, no sync to check.
 
 ---
 
